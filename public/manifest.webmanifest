@@ -1,0 +1,10 @@
+{
+  "name": "HAUNT — Find Your Scene",
+  "short_name": "HAUNT",
+  "description": "Find genuine goth events, music, looks, deals, and local haunts.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#070707",
+  "theme_color": "#070707",
+  "icons": []
+}
