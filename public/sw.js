@@ -1,4 +1,4 @@
-const CACHE = "haunt-pwa-v2";
+const CACHE = "haunt-pwa-v3";
 const APP_SHELL = ["/", "/index.html", "/manifest.webmanifest"];
 
 async function cacheResponse(request, response) {
@@ -30,14 +30,18 @@ self.addEventListener("install", (event) => {
 });
 
 self.addEventListener("activate", (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) => Promise.all(
-      keys
-        .filter((key) => key.startsWith("haunt-") && key !== CACHE)
-        .map((key) => caches.delete(key))
-    ))
-  );
-  self.clients.claim();
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    const outdatedCaches = keys.filter((key) => key.startsWith("haunt-") && key !== CACHE);
+
+    await Promise.all(outdatedCaches.map((key) => caches.delete(key)));
+    await self.clients.claim();
+
+    if (outdatedCaches.length > 0) {
+      const windows = await self.clients.matchAll({ type: "window" });
+      await Promise.all(windows.map((client) => client.navigate(client.url)));
+    }
+  })());
 });
 
 self.addEventListener("fetch", (event) => {
